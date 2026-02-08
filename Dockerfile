@@ -3,11 +3,14 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Aumenta memória para o build
+ENV NODE_OPTIONS=--max-old-space-size=1024
+
 # Copia arquivos de dependências
 COPY package*.json ./
 
 # Instala dependências
-RUN npm ci --only=production=false
+RUN npm ci
 
 # Copia o resto do código
 COPY . .
@@ -22,7 +25,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV NODE_OPTIONS=--max-old-space-size=450
+ENV NODE_OPTIONS=--max-old-space-size=512
 
 # Copia arquivos necessários do build
 COPY --from=builder /app/.next/standalone ./

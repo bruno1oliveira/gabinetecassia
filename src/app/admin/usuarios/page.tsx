@@ -20,6 +20,7 @@ interface Profile {
 }
 
 const roleConfig: Record<UserRole, { icon: React.ElementType; label: string; color: string }> = {
+    platform_admin: { icon: Shield, label: 'Platform Admin', color: 'text-purple-600 bg-purple-100' },
     master_admin: { icon: Shield, label: 'Administrador', color: 'text-red-600 bg-red-100' },
     vereadora: { icon: User, label: 'Vereadora', color: 'text-purple-600 bg-purple-100' },
     assessor: { icon: Users, label: 'Assessor', color: 'text-teal-600 bg-teal-100' },
@@ -267,8 +268,8 @@ export default function UsuariosPage() {
                                             <button
                                                 onClick={() => handleToggleActive(user)}
                                                 className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium transition-colors ${user.is_active
-                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                        : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                    : 'bg-red-100 text-red-700 hover:bg-red-200'
                                                     }`}
                                             >
                                                 {user.is_active ? (

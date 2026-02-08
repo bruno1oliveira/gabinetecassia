@@ -16,9 +16,10 @@ import {
     Shield,
     FileBarChart,
     UserCog,
+    ExternalLink,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import type { UserRole } from '@/types/database';
+import type { UserRole, Tenant } from '@/types/database';
 
 interface NavItem {
     name: string;
@@ -82,9 +83,10 @@ interface SidebarProps {
     userRole: UserRole;
     userName: string;
     userAvatar?: string;
+    tenant?: Tenant | null;
 }
 
-export default function Sidebar({ userRole, userName, userAvatar }: SidebarProps) {
+export default function Sidebar({ userRole, userName, userAvatar, tenant }: SidebarProps) {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
@@ -112,6 +114,8 @@ export default function Sidebar({ userRole, userName, userAvatar }: SidebarProps
 
     const getRoleColor = (role: UserRole) => {
         switch (role) {
+            case 'platform_admin':
+                return 'bg-purple-500';
             case 'master_admin':
                 return 'bg-red-500';
             case 'vereadora':
@@ -121,6 +125,11 @@ export default function Sidebar({ userRole, userName, userAvatar }: SidebarProps
         }
     };
 
+    // Cores do tenant ou padrão
+    const primaryColor = tenant?.primary_color || '#E30613';
+    const tenantName = tenant?.name || 'Gabinete Digital';
+    const tenantInitial = tenantName.charAt(0).toUpperCase();
+
     return (
         <motion.aside
             initial={false}
@@ -129,16 +138,28 @@ export default function Sidebar({ userRole, userName, userAvatar }: SidebarProps
         >
             {/* Header */}
             <div className="p-4 border-b border-gray-800 flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#E30613] rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold">C</span>
-                </div>
+                {tenant?.logo_url ? (
+                    <img
+                        src={tenant.logo_url}
+                        alt={tenantName}
+                        className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                    />
+                ) : (
+                    <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: primaryColor }}
+                    >
+                        <span className="text-white font-bold">{tenantInitial}</span>
+                    </div>
+                )}
                 {!isCollapsed && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        className="overflow-hidden"
                     >
-                        <h1 className="font-bold text-lg">Gabinete Cássia</h1>
+                        <h1 className="font-bold text-lg truncate">{tenantName}</h1>
                         <p className="text-xs text-gray-400">Painel Administrativo</p>
                     </motion.div>
                 )}

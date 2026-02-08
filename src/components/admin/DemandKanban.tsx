@@ -44,9 +44,10 @@ const sampleDemands: Demand[] = [
         priority: 0,
         resolution_notes: null,
         resolved_at: null,
+        tenant_id: null,
         created_at: '2025-02-05T10:00:00Z',
         updated_at: '2025-02-05T10:00:00Z',
-        neighborhood: { id: 1, name: 'Indaiá', zone: 'Litoral Sul', population_estimate: null, created_at: '' },
+        neighborhood: { id: 1, name: 'Indaiá', zone: 'Litoral Sul', population_estimate: null, tenant_id: null, created_at: '' },
     },
     {
         id: '2',
@@ -63,9 +64,10 @@ const sampleDemands: Demand[] = [
         priority: 2,
         resolution_notes: null,
         resolved_at: null,
+        tenant_id: null,
         created_at: '2025-02-04T14:30:00Z',
         updated_at: '2025-02-05T08:00:00Z',
-        neighborhood: { id: 2, name: 'Centro', zone: 'Centro', population_estimate: null, created_at: '' },
+        neighborhood: { id: 2, name: 'Centro', zone: 'Centro', population_estimate: null, tenant_id: null, created_at: '' },
     },
     {
         id: '3',
@@ -82,9 +84,10 @@ const sampleDemands: Demand[] = [
         priority: 1,
         resolution_notes: null,
         resolved_at: null,
+        tenant_id: null,
         created_at: '2025-02-01T09:00:00Z',
         updated_at: '2025-02-03T16:00:00Z',
-        neighborhood: { id: 3, name: 'Martim de Sá', zone: 'Litoral Sul', population_estimate: null, created_at: '' },
+        neighborhood: { id: 3, name: 'Martim de Sá', zone: 'Litoral Sul', population_estimate: null, tenant_id: null, created_at: '' },
     },
 ];
 

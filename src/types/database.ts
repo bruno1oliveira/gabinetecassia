@@ -1,8 +1,8 @@
 // ================================================
-// TIPOS DO BANCO DE DADOS - VEREADORA CÁSSIA
+// TIPOS DO BANCO DE DADOS - GABINETE DIGITAL
 // ================================================
 
-export type UserRole = 'master_admin' | 'vereadora' | 'assessor';
+export type UserRole = 'platform_admin' | 'master_admin' | 'vereadora' | 'assessor';
 
 export type DemandStatus = 'nova' | 'em_analise' | 'encaminhada_prefeitura' | 'resolvida' | 'arquivada';
 
@@ -16,20 +16,70 @@ export type DemandType =
     | 'moradia'
     | 'outros';
 
+export type TenantPlan = 'basic' | 'premium' | 'enterprise';
+
+// ================================================
+// TENANT (GABINETE)
+// ================================================
+
+export interface Tenant {
+    id: string;
+    name: string;
+    slug: string;
+
+    // Localização
+    city: string;
+    state: string;
+
+    // Visual/Branding
+    primary_color: string;
+    secondary_color: string;
+    logo_url: string | null;
+    photo_url: string | null;
+    favicon_url: string | null;
+
+    // Contato
+    whatsapp: string | null;
+    email: string | null;
+    phone: string | null;
+    instagram: string | null;
+    facebook: string | null;
+    youtube: string | null;
+    website: string | null;
+
+    // Endereço
+    address: string | null;
+    address_complement: string | null;
+
+    // Domínios
+    custom_domain: string | null;
+
+    // Configurações
+    is_active: boolean;
+    plan: TenantPlan;
+    max_users: number;
+
+    // Metadados
+    created_at: string;
+    updated_at: string;
+}
+
 // ================================================
 // TABELAS
-// ================================================
 
 export interface Profile {
     id: string;
     email: string;
     full_name: string;
     role: UserRole;
+    tenant_id: string | null;
     avatar_url: string | null;
     phone: string | null;
     is_active: boolean;
     created_at: string;
     updated_at: string;
+    // Joined data
+    tenant?: Tenant;
 }
 
 export interface Neighborhood {
@@ -37,6 +87,7 @@ export interface Neighborhood {
     name: string;
     zone: string | null;
     population_estimate: number | null;
+    tenant_id: string | null;
     created_at: string;
 }
 
@@ -55,6 +106,7 @@ export interface Demand {
     priority: number;
     resolution_notes: string | null;
     resolved_at: string | null;
+    tenant_id: string | null;
     created_at: string;
     updated_at: string;
     // Joined data
@@ -76,6 +128,7 @@ export interface News {
     published_at: string | null;
     meta_title: string | null;
     meta_description: string | null;
+    tenant_id: string | null;
     created_at: string;
     updated_at: string;
     // Joined data
@@ -92,6 +145,7 @@ export interface Contact {
     tags: string[];
     source: string | null;
     notes: string | null;
+    tenant_id: string | null;
     created_at: string;
     updated_at: string;
     // Joined data
@@ -106,6 +160,7 @@ export interface SystemLog {
     entity_id: string | null;
     details: Record<string, unknown> | null;
     ip_address: string | null;
+    tenant_id: string | null;
     created_at: string;
     // Joined data
     user?: Profile;

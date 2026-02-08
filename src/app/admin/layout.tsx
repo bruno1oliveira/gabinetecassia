@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/admin/Sidebar';
+import { TenantProvider } from '@/contexts/TenantContext';
 import { createClient } from '@/lib/supabase/client';
-import type { UserRole } from '@/types/database';
+import type { UserRole, Tenant } from '@/types/database';
 
 export default function AdminLayout({
     children,
@@ -14,6 +15,7 @@ export default function AdminLayout({
     const router = useRouter();
     const [userRole, setUserRole] = useState<UserRole>('assessor');
     const [userName, setUserName] = useState('Carregando...');
+    const [tenant, setTenant] = useState<Tenant | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -24,21 +26,19 @@ export default function AdminLayout({
             const { data: { user }, error: authError } = await supabase.auth.getUser();
 
             if (authError || !user) {
-                // Não autenticado, redirecionar para login
                 router.push('/login');
                 return;
             }
 
-            // Buscar perfil do usuário (inclui role)
+            // Buscar perfil do usuário (inclui role e tenant_id)
             const { data: profile, error: profileError } = await supabase
                 .from('profiles')
-                .select('full_name, role, is_active')
+                .select('full_name, role, is_active, tenant_id')
                 .eq('id', user.id)
                 .single();
 
             if (profileError || !profile) {
                 console.error('Erro ao buscar perfil:', profileError);
-                // Perfil não encontrado, pode ser que as tabelas não foram criadas
                 setUserName(user.email || 'Usuário');
                 setUserRole('assessor');
                 setIsLoading(false);
@@ -54,17 +54,42 @@ export default function AdminLayout({
 
             setUserName(profile.full_name);
             setUserRole(profile.role as UserRole);
+
+            // Buscar dados do tenant
+            if (profile.tenant_id) {
+                const { data: tenantData } = await supabase
+                    .from('tenants')
+                    .select('*')
+                    .eq('id', profile.tenant_id)
+                    .single();
+
+                if (tenantData) {
+                    setTenant(tenantData as Tenant);
+                }
+            }
+
             setIsLoading(false);
         };
 
         checkAuth();
     }, [router]);
 
+    // Gerar CSS variables do tenant
+    const tenantStyles = tenant ? `
+        :root {
+            --primary-color: ${tenant.primary_color || '#E30613'};
+            --secondary-color: ${tenant.secondary_color || '#FBBF24'};
+        }
+    ` : '';
+
     if (isLoading) {
         return (
             <div className="min-h-screen bg-gray-100 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-[#E30613] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                    <div
+                        className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+                        style={{ borderColor: tenant?.primary_color || '#E30613', borderTopColor: 'transparent' }}
+                    />
                     <p className="text-gray-600">Carregando painel...</p>
                 </div>
             </div>
@@ -72,19 +97,23 @@ export default function AdminLayout({
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <Sidebar
-                userRole={userRole}
-                userName={userName}
-            />
+        <TenantProvider tenant={tenant}>
+            {/* Inject tenant CSS variables */}
+            {tenantStyles && <style dangerouslySetInnerHTML={{ __html: tenantStyles }} />}
 
-            <main
-                className="transition-all duration-300 ml-[280px]"
-            >
-                <div className="p-8">
-                    {children}
-                </div>
-            </main>
-        </div>
+            <div className="min-h-screen bg-gray-100">
+                <Sidebar
+                    userRole={userRole}
+                    userName={userName}
+                    tenant={tenant}
+                />
+
+                <main className="transition-all duration-300 ml-[280px]">
+                    <div className="p-8">
+                        {children}
+                    </div>
+                </main>
+            </div>
+        </TenantProvider>
     );
 }

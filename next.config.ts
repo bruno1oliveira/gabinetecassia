@@ -2,14 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+
+  // Força modo dinâmico (evita SSG)
+  experimental: {
+    disableOptimizedLoading: true,
+  },
+
   devIndicators: {
     position: "bottom-right",
-  },
-  // Experimental settings for better SSG compatibility
-  experimental: {
-    // Disable strict mode during build to avoid double-render issues
   },
 };
 
 export default nextConfig;
-

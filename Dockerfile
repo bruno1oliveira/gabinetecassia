@@ -6,10 +6,18 @@ WORKDIR /app
 # Aumenta memória para o build
 ENV NODE_OPTIONS=--max-old-space-size=1024
 
+# Build args para variáveis de ambiente do Supabase
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+# Define as variáveis de ambiente durante o build
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+
 # Copia arquivos de dependências
 COPY package*.json ./
 
-# Instala dependências (usando npm install pois não há package-lock.json)
+# Instala dependências
 RUN npm install
 
 # Copia o resto do código

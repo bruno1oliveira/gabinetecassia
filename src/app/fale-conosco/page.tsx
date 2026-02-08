@@ -3,6 +3,9 @@ import Footer from '@/components/landing/Footer';
 import GabineteDigital from '@/components/landing/GabineteDigital';
 import type { Metadata } from 'next';
 
+// Força renderização dinâmica para evitar erro de Supabase durante build
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: 'Fale Conosco | Vereadora Cássia - PT Caraguatatuba',
     description: 'Envie sua demanda diretamente ao gabinete da Vereadora Cássia.',

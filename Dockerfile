@@ -6,16 +6,16 @@ WORKDIR /app
 # Aumenta memória para o build
 ENV NODE_OPTIONS=--max-old-space-size=1024
 
-# Copia arquivos de dependências primeiro (melhor cache)
+# Copia arquivos de dependências
 COPY package*.json ./
 
-# Limpa cache npm e instala dependências
-RUN npm cache clean --force && npm ci
+# Instala dependências (usando npm install pois não há package-lock.json)
+RUN npm install
 
 # Copia o resto do código
 COPY . .
 
-# Remove arquivos que podem causar problemas
+# Remove cache que pode causar problemas
 RUN rm -rf .next node_modules/.cache
 
 # Build da aplicação

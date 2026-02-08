@@ -1,24 +1,16 @@
-version: '3.8'
-
 services:
   app:
-    image: node:20-alpine
-    container_name: gabinetecassia-app-1
-    working_dir: /app
-    volumes:
-      - .:/app
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:3000"
     environment:
-      # Limita o uso de memória do motor V8 do Node.js
+      - NODE_ENV=production
       - NODE_OPTIONS=--max-old-space-size=450
-      - NODE_ENV=development
-    # Removido o 'npm install' do comando de inicialização para poupar RAM
-    command: npm run dev
     deploy:
       resources:
         limits:
-          # Limite físico de memória para o container
           memory: 512M
     restart: always
 

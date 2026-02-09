@@ -1,10 +1,26 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MessageCircle, Heart, ArrowDown } from 'lucide-react';
+import { getSiteSettings, SiteSettings } from '@/lib/settings';
 
 export default function Hero() {
+  const [settings, setSettings] = useState<SiteSettings | null>(null);
+
+  useEffect(() => {
+    getSiteSettings().then(setSettings);
+  }, []);
+
+  const whatsappUrl = settings?.whatsapp_number
+    ? `https://wa.me/${settings.whatsapp_number}`
+    : 'https://wa.me/5512999999999';
+
+  const subtitle = settings?.hero_subtitle ||
+    'Trabalhando todos os dias pela nossa cidade. Defendo mulheres, cultura caiçara e moradia digna para quem mais precisa.';
+
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-warm-gradient">
       {/* Background Elements */}
@@ -38,9 +54,15 @@ export default function Hero() {
             </h1>
 
             <p className="section-subtitle text-left lg:text-left mb-8">
-              Trabalhando todos os dias pela nossa cidade. Defendo <strong className="text-[#E30613]">mulheres</strong>,
-              <strong className="text-[#E30613]"> cultura caiçara</strong> e
-              <strong className="text-[#E30613]"> moradia digna</strong> para quem mais precisa.
+              {subtitle.split('mulheres')[0]}
+              <strong className="text-[#E30613]">mulheres</strong>
+              {subtitle.includes('cultura') && (
+                <>
+                  ,<strong className="text-[#E30613]"> cultura caiçara</strong> e
+                  <strong className="text-[#E30613]"> moradia digna</strong> para quem mais precisa.
+                </>
+              )}
+              {!subtitle.includes('cultura') && subtitle.split('mulheres')[1]}
             </p>
 
             {/* CTA Buttons */}
@@ -55,7 +77,7 @@ export default function Hero() {
               </motion.div>
 
               <motion.a
-                href="https://wa.me/5512999999999"
+                href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-whatsapp flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-lg"
@@ -94,13 +116,23 @@ export default function Hero() {
               <div className="relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#E30613] to-[#B91C1C] rounded-full glow-red" />
 
-                {/* 📸 FOTO HERO */}
+                {/* Foto Hero */}
                 <div className="absolute inset-2 rounded-full overflow-hidden bg-gradient-to-br from-[#E30613] to-[#FF4757]">
-                  <div className="w-full h-full flex flex-col items-center justify-center text-white text-center p-8">
-                    <span className="text-6xl mb-4">📸</span>
-                    <p className="font-medium opacity-90">Foto da Vereadora</p>
-                    <p className="text-xs opacity-60 mt-2">public/images/cassia-hero.jpg</p>
-                  </div>
+                  {settings?.hero_image_url ? (
+                    <Image
+                      src={settings.hero_image_url}
+                      alt="Vereadora Cássia"
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-white text-center p-8">
+                      <span className="text-6xl mb-4">📸</span>
+                      <p className="font-medium opacity-90">Foto da Vereadora</p>
+                      <p className="text-xs opacity-60 mt-2">Configure em Configurações</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Floating badges */}

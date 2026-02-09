@@ -6,6 +6,7 @@ import { Plus, Search, Edit, Eye, Trash2, Calendar, Send, Archive, FileText } fr
 import { createClient } from '@/lib/supabase/client';
 import Modal from '@/components/ui/Modal';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import ImageUploader from '@/components/ui/ImageUploader';
 
 type NewsStatus = 'rascunho' | 'pendente_aprovacao' | 'publicada' | 'arquivada';
 
@@ -229,8 +230,8 @@ export default function NoticiasPage() {
                             key={status}
                             onClick={() => setFilter(status)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === status
-                                    ? 'bg-[#E30613] text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-[#E30613] text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
                             {status === 'todas' ? 'Todas' : statusColors[status as NewsStatus]?.label || status}
@@ -421,13 +422,12 @@ export default function NoticiasPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">URL da Imagem de Capa</label>
-                        <input
-                            type="url"
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Imagem de Capa</label>
+                        <ImageUploader
                             value={formData.cover_image_url}
-                            onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E30613]/20 focus:border-[#E30613] outline-none"
-                            placeholder="https://..."
+                            onChange={(url) => setFormData({ ...formData, cover_image_url: url })}
+                            folder="news"
+                            aspectRatio="video"
                         />
                     </div>
 

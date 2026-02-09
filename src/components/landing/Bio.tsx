@@ -1,7 +1,10 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { MapPin, GraduationCap, Heart, Users, Star, Quote } from 'lucide-react';
+import { getSiteSettings, SiteSettings } from '@/lib/settings';
 
 const timeline = [
     { year: '1980', title: 'Origem', description: 'Nascida em Montes Claros, MG', icon: MapPin },
@@ -11,6 +14,14 @@ const timeline = [
 ];
 
 export default function Bio() {
+    const [settings, setSettings] = useState<SiteSettings | null>(null);
+
+    useEffect(() => {
+        getSiteSettings().then(setSettings);
+    }, []);
+
+    const quote = settings?.bio_quote || 'Com luta e persistência, transformamos a realidade do nosso povo.';
+
     return (
         <section id="quem-sou" className="py-20 bg-gradient-to-b from-[#FEF7F7] to-white relative overflow-hidden">
             {/* Background decoration */}
@@ -45,12 +56,20 @@ export default function Bio() {
                             <div className="absolute -inset-4 bg-gradient-to-br from-[#E30613]/20 to-[#FBBF24]/20 rounded-3xl blur-xl" />
 
                             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-[#E30613] to-[#B91C1C]">
-                                {/* 📸 FOTO BIO */}
-                                <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8 text-center">
-                                    <span className="text-6xl mb-4">📸</span>
-                                    <p className="font-medium opacity-90">Foto Biografia</p>
-                                    <p className="text-xs opacity-60 mt-2">public/images/cassia-bio.jpg</p>
-                                </div>
+                                {settings?.bio_image_url ? (
+                                    <Image
+                                        src={settings.bio_image_url}
+                                        alt="Cássia - Vereadora"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                ) : (
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8 text-center">
+                                        <span className="text-6xl mb-4">📸</span>
+                                        <p className="font-medium opacity-90">Foto Biografia</p>
+                                        <p className="text-xs opacity-60 mt-2">Configure em Configurações</p>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Quote card */}
@@ -63,7 +82,7 @@ export default function Bio() {
                             >
                                 <Quote className="w-6 h-6 text-[#E30613] mb-2" />
                                 <p className="text-gray-700 italic text-sm leading-relaxed">
-                                    &ldquo;Com luta e persistência, transformamos a realidade do nosso povo.&rdquo;
+                                    &ldquo;{quote}&rdquo;
                                 </p>
                                 <p className="text-[#E30613] font-bold text-sm mt-3">— Cássia</p>
                             </motion.div>

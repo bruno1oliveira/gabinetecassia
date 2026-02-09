@@ -30,15 +30,16 @@ export default function AdminLayout({
                 return;
             }
 
-            // Buscar perfil do usuário (inclui role e tenant_id)
+            // Buscar perfil do usuário (sem tenant_id - schema simples)
             const { data: profile, error: profileError } = await supabase
                 .from('profiles')
-                .select('full_name, role, is_active, tenant_id')
+                .select('full_name, role, is_active')
                 .eq('id', user.id)
                 .single();
 
             if (profileError || !profile) {
                 console.error('Erro ao buscar perfil:', profileError);
+                // Fallback: usar dados do auth
                 setUserName(user.email || 'Usuário');
                 setUserRole('assessor');
                 setIsLoading(false);
@@ -54,33 +55,19 @@ export default function AdminLayout({
 
             setUserName(profile.full_name);
             setUserRole(profile.role as UserRole);
-
-            // Buscar dados do tenant
-            if (profile.tenant_id) {
-                const { data: tenantData } = await supabase
-                    .from('tenants')
-                    .select('*')
-                    .eq('id', profile.tenant_id)
-                    .single();
-
-                if (tenantData) {
-                    setTenant(tenantData as Tenant);
-                }
-            }
-
             setIsLoading(false);
         };
 
         checkAuth();
     }, [router]);
 
-    // Gerar CSS variables do tenant
-    const tenantStyles = tenant ? `
+    // Gerar CSS variables do tenant (usando cores padrão)
+    const tenantStyles = `
         :root {
-            --primary-color: ${tenant.primary_color || '#E30613'};
-            --secondary-color: ${tenant.secondary_color || '#FBBF24'};
+            --primary-color: ${tenant?.primary_color || '#E30613'};
+            --secondary-color: ${tenant?.secondary_color || '#FBBF24'};
         }
-    ` : '';
+    `;
 
     if (isLoading) {
         return (
@@ -88,7 +75,7 @@ export default function AdminLayout({
                 <div className="text-center">
                     <div
                         className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
-                        style={{ borderColor: tenant?.primary_color || '#E30613', borderTopColor: 'transparent' }}
+                        style={{ borderColor: '#E30613', borderTopColor: 'transparent' }}
                     />
                     <p className="text-gray-600">Carregando painel...</p>
                 </div>
@@ -99,7 +86,7 @@ export default function AdminLayout({
     return (
         <TenantProvider tenant={tenant}>
             {/* Inject tenant CSS variables */}
-            {tenantStyles && <style dangerouslySetInnerHTML={{ __html: tenantStyles }} />}
+            <style dangerouslySetInnerHTML={{ __html: tenantStyles }} />
 
             <div className="min-h-screen bg-gray-100">
                 <Sidebar

@@ -75,7 +75,7 @@ const navItems: NavItem[] = [
         name: 'Configurações',
         href: '/admin/configuracoes',
         icon: Settings,
-        roles: ['master_admin'],
+        roles: ['master_admin', 'vereadora', 'assessor'],
     },
 ];
 
